@@ -12,6 +12,8 @@ function calculateSalary(employee){
     return salary;
 }
 
+//Refactoring
+
 /**
  * These are the two new function and 
  * they follow the `S` principle which we

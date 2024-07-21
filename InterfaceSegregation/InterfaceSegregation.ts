@@ -13,6 +13,7 @@ interface IUser {
   bankInfo: string;
 }
 
+// Refactoring
 interface IUserPersonalInfo {
   name: string;
   email: string;
