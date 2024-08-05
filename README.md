@@ -74,3 +74,16 @@ class TextManipulator {
 
 In the refactored code we have two separate classes that are performing separate action.
 
+#### Why Single Responsibility Principle
+With Single Responsibility Principle in place we can achieve the following :-
+1. Better code organization and maintainability
+2. Higher code reusability
+3. Improved readability
+4. Easier debugging and testing
+
+#### Things to take in account
+The trick to implement single responsibility principle is to know what is the single responsibility of our class. However every developer has his/her vision for class responsibility, and since we don't have any instructions on how to implement, we are only left with our own interpretation.
+
+There can be instances when we separate two classes that are in fact doing the same thing with business or architecture perspective. This can create a more complicated code with both the classes **tightly coupled** to each other, and thus reducing the sole purpose of **SOLID** principles
+
+> The key is not to overthink when creating new classes
