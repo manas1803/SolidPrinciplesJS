@@ -156,8 +156,7 @@ The above approach has few issues with it.
 4. With addition of new code, the maintainence overhead for the classes increases.
 
 To get rid of the above issues we go with Open Closed Principle approach
-
-So lets refactor the code to apply Open Principle
+What we do is basically create an abstract class for `Employees` and then make the `calculateBonus()` method as abstract. Now once that is done, we can create as many classes as we want based on `type of Employee` and then simply extend this abstract class 
 
 ```ts
 abstract class Employee {
