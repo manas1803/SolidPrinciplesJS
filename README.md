@@ -247,3 +247,5 @@ currentAccount.withdrawAmount(1212);
 
 console.log("Amount in current account is ", currentAccount.getAmount);
 ```
+
+### Liskov Substitution Principle(L)
