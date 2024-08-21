@@ -249,3 +249,166 @@ console.log("Amount in current account is ", currentAccount.getAmount);
 ```
 
 ### Liskov Substitution Principle(L)
+The Liskov Substitution Principle says that objects of a superclass shall be replaceable with objects of its subclasses without breaking the application. That requires the objects of your subclasses to behave in the same way as the objects of your superclass.
+> Liskov Substitution Principle is extension of Open/Close Principle
+
+In simple words
+1. Objects of a superclass should be able to be replaced with objects of a subclass without affecting the program.
+2. Object of subclass should be able to access the all the methods and properties of the superclass.
+
+Lets take an example to understand this :-(Since this is extension of Opne/Close Principle lets use the same example)
+
+As we have seen now that if we have different types of bank account, we can simply create a new bankAccount by extending the class bankAccount
+
+Now suppose we have a new BankAccount type now, for Fixed Deposit. From the Open/Close Principle we can simply implement this as
+```ts
+class FixedDepositAccount extends BankAccount{
+      withdrawAmount(newAmount: number): void {
+          throw new Error("Cannot withdraw from Fixed Deposit when in locing period.");
+      }
+      depositAmount(newAmount: number): void {
+        this.setAmount = this.getAmount + newAmount;
+      }
+    
+  }
+
+const fixedAccount = new FixedDepositAccount("Manas", "123");
+fixedAccount.depositAmount(1234567);
+```
+
+Since we cannot withdraw from FixedDepositAccount we throw an error for that
+
+Lets assume we have a `BankWithdrawlService` and we wish to withdraw amount from different accounts.
+```ts
+class BankWithdrawService {
+    private _bankAccount:BankAccount
+
+    constructor(bankAccount:BankAccount){
+        this._bankAccount=bankAccount
+    }
+
+    withdrawAmount(amount:number){
+        this._bankAccount.withdrawAmount(amount)
+    }
+}
+
+```
+Now Liskov Principle says that any subclass of a class should be able to replace it. So now if we try to withdraw amount from fixedDeposit class(Subclass of BankAccount), we will get an error which violates the Liskov Principle
+
+```ts
+const bankWithdrawlService = new BankWithdrawService(fixedAccount)
+bankWithdrawlService.withdrawAmount(123)
+
+```
+>Error: Cannot withdraw from Fixed Deposit when in locking period.
+
+So to improve this code and align with Liskov principle, first we need to separate out the withdraw method. Since all accounts will always have deposit method so lets create interfaces to refactor the code and optimise it.
+
+Steps to approach :-
+1. We create an interface for deposit method, since all bank accounts currently that we have serve deposit
+2. Then we create another interface for withdraw method for withdrawable accounts
+3. Now we create a main BankAccount abstract class which implements the deposit interface
+4. Then we create a withdrawable abstract class which extends the BankAccount class and also implements the withdrawable interface
+5. Now we simple use withdrawable abstract class for Savings and Current Account
+6. And the BankAccount abstract class for FixedDeposit account
+
+```ts
+interface IDepositAmount {
+  depositAmount(amount: number): void;
+}
+
+interface IWithdrawAmount {
+  withdrawAmount(amount: number): void;
+}
+abstract class BankAccount implements IDepositAmount {
+  private _customerName: string;
+  private _customerId: string;
+  private _amount: number = 10000;
+
+  constructor(customerName: string, customerId: string) {
+    this._customerName = customerName;
+    this._customerId = customerId;
+  }
+  abstract depositAmount(amount: number): void;
+
+  public get getAmount(): number {
+    return this._amount;
+  }
+
+  public set setAmount(amount: number) {
+    this._amount = amount;
+  }
+}
+
+abstract class WithdrawableAccount
+  extends BankAccount
+  implements IWithdrawAmount
+{
+  constructor(customerName: string, customerId: string) {
+    super(customerName, customerId);
+  }
+  abstract withdrawAmount(amount: number): void;
+}
+
+class SavingsAccount extends WithdrawableAccount {
+  constructor(customerName: string, customerId: string) {
+    super(customerName, customerId);
+  }
+
+  withdrawAmount(newAmount: number): void {
+    this.setAmount = this.getAmount - this.getAmount * 0.005 - newAmount;
+  }
+
+  depositAmount(newAmount: number): void {
+    this.setAmount = this.getAmount + this.getAmount * 0.005 + newAmount;
+  }
+}
+
+class CurrentAccount extends WithdrawableAccount {
+  constructor(customerName: string, customerId: string) {
+    super(customerName, customerId);
+  }
+
+  withdrawAmount(newAmount: number): void {
+    this.setAmount = this.getAmount - this.getAmount * 0.005 - newAmount;
+  }
+
+  depositAmount(newAmount: number): void {
+    this.setAmount = this.getAmount + this.getAmount * 0.005 + newAmount;
+  }
+}
+
+class FixedDepositAccount extends BankAccount {
+  depositAmount(amount: number): void {
+    this.setAmount = this.getAmount + amount;
+  }
+}
+const fixedAccount = new FixedDepositAccount("Manas", "123");
+fixedAccount.depositAmount(1234567);
+
+class BankWithdrawService {
+  private _withdrawableAccount: WithdrawableAccount;
+
+  constructor(withdrawableAccount: WithdrawableAccount) {
+    this._withdrawableAccount = withdrawableAccount;
+  }
+
+  withdrawAmount(amount: number) {
+    this._withdrawableAccount.withdrawAmount(amount);
+  }
+}
+
+const withdrawableAccount = new SavingsAccount("Manas","123")
+
+const bankWithdrawlService = new BankWithdrawService(withdrawableAccount);
+bankWithdrawlService.withdrawAmount(123);
+
+```
+
+Benefits:
+The benefit of following LSP is that it leads to more modular, extensible, and maintainable code. Here are some specific benefits:
+
+1. Code reusability: When LSP is followed, the code can be reused easily because it allows for the use of generic interfaces or base classes that can be implemented or extended by different subclasses.
+
+2. Improved code quality: By following LSP, the code becomes more understandable and easier to maintain.
+
