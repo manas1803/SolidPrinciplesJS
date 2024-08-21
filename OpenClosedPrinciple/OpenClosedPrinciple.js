@@ -13,60 +13,60 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var Employee = /** @class */ (function () {
-    function Employee(empName, id, salary, empType) {
-        this._empName = empName;
-        this._id = id;
-        this._salary = salary;
-        this._empType = empType;
+var BankAccount = /** @class */ (function () {
+    function BankAccount(customerName, customerId, bankType) {
+        this._amount = 10000;
+        this._customerName = customerName;
+        this._customerId = customerId;
+        this._bankType = bankType;
     }
-    Object.defineProperty(Employee.prototype, "salary", {
+    Object.defineProperty(BankAccount.prototype, "getAmount", {
         get: function () {
-            return this._salary;
+            return this._amount;
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(Employee.prototype, "empName", {
-        get: function () {
-            return this._empName;
+    Object.defineProperty(BankAccount.prototype, "setAmount", {
+        set: function (amount) {
+            this._amount = amount;
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(Employee.prototype, "id", {
-        get: function () {
-            return this._id;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Employee.prototype.printResult = function () {
-        return "The bonus of employe ".concat(this.empName, " with id ").concat(this.id, " is ").concat(this.calculateBonus());
-    };
-    return Employee;
+    return BankAccount;
 }());
-var PermanentEmployee = /** @class */ (function (_super) {
-    __extends(PermanentEmployee, _super);
-    function PermanentEmployee() {
-        return _super !== null && _super.apply(this, arguments) || this;
+var SavingsAccount = /** @class */ (function (_super) {
+    __extends(SavingsAccount, _super);
+    function SavingsAccount(customerName, customerId, bankType) {
+        return _super.call(this, customerName, customerId, bankType) || this;
     }
-    PermanentEmployee.prototype.calculateBonus = function () {
-        return this.salary + this.salary / 2;
+    SavingsAccount.prototype.withdrawAmount = function (newAmount) {
+        this.setAmount = this.getAmount - newAmount;
     };
-    return PermanentEmployee;
-}(Employee));
-var TemporaryEmployee = /** @class */ (function (_super) {
-    __extends(TemporaryEmployee, _super);
-    function TemporaryEmployee() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    SavingsAccount.prototype.depositAmount = function (newAmount) {
+        this.setAmount = this.getAmount + newAmount;
+    };
+    return SavingsAccount;
+}(BankAccount));
+var CurrentAccount = /** @class */ (function (_super) {
+    __extends(CurrentAccount, _super);
+    function CurrentAccount(customerName, customerId, bankType) {
+        return _super.call(this, customerName, customerId, bankType) || this;
     }
-    TemporaryEmployee.prototype.calculateBonus = function () {
-        return this.salary * 0.5 + this.salary / 2;
+    CurrentAccount.prototype.withdrawAmount = function (newAmount) {
+        this.setAmount = this.getAmount - this.getAmount * 0.005 - newAmount;
     };
-    return TemporaryEmployee;
-}(Employee));
-var emp1 = new PermanentEmployee("Manas Pant", 1, 1000000, "permanent");
-var emp2 = new TemporaryEmployee("Kislaya Pant", 1, 1000000, "temporary");
-console.log(emp1.printResult());
-console.log(emp2.printResult());
+    CurrentAccount.prototype.depositAmount = function (newAmount) {
+        this.setAmount = this.getAmount + this.getAmount * 0.005 + newAmount;
+    };
+    return CurrentAccount;
+}(BankAccount));
+var savingsAccount = new SavingsAccount("Manas", "123", "savings");
+var currentAccount = new CurrentAccount("Manas", "123", "current");
+savingsAccount.depositAmount(100000);
+savingsAccount.withdrawAmount(1212);
+console.log("Amount in savings account is ", savingsAccount.getAmount);
+currentAccount.depositAmount(100000);
+currentAccount.withdrawAmount(1212);
+console.log("Amount in current account is ", currentAccount.getAmount);

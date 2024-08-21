@@ -1,50 +1,65 @@
-abstract class Employee {
-  private _empName: string;
-  private _id: number;
-  private _salary: number;
-  private _empType: string;
+abstract class BankAccount {
+  private _customerName: string;
+  private _customerId: string;
+  private _bankType: string;
+  private _amount: number = 10000;
 
-  constructor(empName: string, id: number, salary: number, empType: string) {
-    this._empName = empName;
-    this._id = id;
-    this._salary = salary;
-    this._empType = empType;
+  constructor(customerName: string, customerId: string, bankType: string) {
+    this._customerName = customerName;
+    this._customerId = customerId;
+    this._bankType = bankType;
   }
 
-  public get salary(): number {
-    return this._salary;
+  public get getAmount(): number {
+    return this._amount;
   }
 
-  public get empName(): string {
-    return this._empName;
+  public set setAmount(amount: number) {
+    this._amount = amount;
   }
 
-  public get id(): number {
-    return this._id;
+  abstract withdrawAmount(newAmount: number): void;
+
+  abstract depositAmount(newAmount: number): void;
+}
+
+class SavingsAccount extends BankAccount {
+  constructor(customerName: string, customerId: string, bankType: string) {
+    super(customerName, customerId, bankType);
   }
 
-  abstract calculateBonus();
+  withdrawAmount(newAmount: number): void {
+    this.setAmount = this.getAmount - newAmount;
+  }
 
-  printResult() {
-    return `The bonus of employe ${this.empName} with id ${
-      this.id
-    } is ${this.calculateBonus()}`;
+  depositAmount(newAmount: number): void {
+    this.setAmount = this.getAmount + newAmount;
   }
 }
 
-class PermanentEmployee extends Employee {
-  calculateBonus() {
-    return this.salary+this.salary/2;
+class CurrentAccount extends BankAccount {
+  constructor(customerName: string, customerId: string, bankType: string) {
+    super(customerName, customerId, bankType);
+  }
+
+  withdrawAmount(newAmount: number): void {
+    this.setAmount = this.getAmount - this.getAmount * 0.005 - newAmount;
+  }
+
+  depositAmount(newAmount: number): void {
+    this.setAmount = this.getAmount + this.getAmount * 0.005 + newAmount;
   }
 }
 
-class TemporaryEmployee extends Employee {
-  calculateBonus() {
-    return this.salary*0.5+this.salary/2;
-  }
-}
+const savingsAccount = new SavingsAccount("Manas", "123", "savings");
+const currentAccount = new CurrentAccount("Manas", "123", "current");
 
-const emp1 = new PermanentEmployee("Manas Pant", 1, 1000000, "permanent");
-const emp2 = new TemporaryEmployee("Kislaya Pant", 1, 1000000, "temporary");
-console.log(emp1.printResult());
-console.log(emp2.printResult());
+savingsAccount.depositAmount(100000);
+savingsAccount.withdrawAmount(1212);
+
+console.log("Amount in savings account is ", savingsAccount.getAmount);
+
+currentAccount.depositAmount(100000);
+currentAccount.withdrawAmount(1212);
+
+console.log("Amount in current account is ", currentAccount.getAmount);
