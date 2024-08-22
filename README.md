@@ -412,3 +412,121 @@ The benefit of following LSP is that it leads to more modular, extensible, and m
 
 2. Improved code quality: By following LSP, the code becomes more understandable and easier to maintain.
 
+### Interface Segregation
+This principle was first defined by Robert C. Martin as: **Clients should not be forced to depend upon interfaces that they do not use**
+
+The goal of this principle is to reduce the side effects of using larger interfaces by breaking application interfaces into smaller ones. It’s similar to the Single Responsibility Principle, where each class or interface serves a single purpose.
+
+Let’s look into a situation where we’ve got a Payment interface used by an implementation BankPayment:
+
+```ts
+interface IPayment{
+  initiatePayment():void;
+  paymentStatus:string;
+  getPayments():Array<string>[];
+}
+
+class BankPayment implements IPayment {
+  initiatePayment(): void {
+    throw new Error("Method not implemented.");
+  }
+  paymentStatus: string;
+  getPayments(): Array<string>[] {
+    throw new Error("Method not implemented.");
+  }
+  
+}
+```
+For simplicity, let’s ignore the actual business implementation of these methods.
+
+This is very clear — so far, the implementing class BankPayment needs all the methods in the Payment interface. Thus, it doesn’t violate the principle.
+
+Now with time we got a new feature introduced and we need to implement LoanPayment Service
+
+```ts
+interface IPayment{
+  initiatePayment():void;
+  paymentStatus:string;
+  getPayments():Array<string>[];
+  intiateLoanSettlement():void;
+  initiateRePayment():void;
+}
+
+class BankPayment implements IPayment {
+  intiateLoanSettlement(): void {
+    // Not needed here
+  }
+  initiateRePayment(): void {
+    // not needed here
+  }
+  initiatePayment(): void {
+    throw new Error("Method not implemented.");
+  }
+  paymentStatus: string;
+  getPayments(): Array<string>[] {
+    throw new Error("Method not implemented.");
+  }
+  
+}
+
+class LoanPayment implements IPayment{
+  initiatePayment(): void {
+    throw new Error("Method not implemented.");
+  }
+  paymentStatus: string;
+  getPayments(): Array<string>[] {
+    throw new Error("Method not implemented.");
+  }
+  intiateLoanSettlement(): void {
+    throw new Error("Method not implemented.");
+  }
+  initiateRePayment(): void {
+    throw new Error("Method not implemented.");
+  }
+
+}
+```
+
+Since the Payment interface has changed and more methods were added, all the implementing classes now have to implement the new methods. The problem is, implementing them is unwanted and could lead to many side effects. Here, the LoanPayment implementation class has to implement the initiatePayments() without any actual need for this. And so, the principle is violated.
+
+```ts
+interface IPayment{
+  paymentStatus:string;
+  getPayments():Array<string>[];
+}
+
+interface IBank extends IPayment{
+  initiatePayment():void;
+}
+
+interface ILoan extends IPayment{
+  intiateLoanSettlement():void;
+  initiateRePayment():void;
+}
+
+class BankPayment implements IBank {
+  initiatePayment(): void {
+    throw new Error("Method not implemented.");
+  }
+  paymentStatus: string;
+  getPayments(): Array<string>[] {
+    throw new Error("Method not implemented.");
+  }
+  
+}
+
+class LoanPayment implements ILoan{
+  intiateLoanSettlement(): void {
+    throw new Error("Method not implemented.");
+  }
+  initiateRePayment(): void {
+    throw new Error("Method not implemented.");
+  }
+  paymentStatus: string;
+  getPayments(): Array<string>[] {
+    throw new Error("Method not implemented.");
+  }
+}
+```
+
+>The principle is similar to Single Responsibility Principle
