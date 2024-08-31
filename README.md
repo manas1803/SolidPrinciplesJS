@@ -93,12 +93,14 @@ There can be instances when we separate two classes that are in fact doing the s
 
 ### Open Closed Principle(O)
 
-The basic definition of the principle is that software entities such as `classes`, `modules`, `functions` etc should be open for extension but closed for modification. Lets break down this statement to understand in detail.
+The basic definition of the principle is that **software entities such as `classes`, `modules`, `functions` etc should be open for extension but closed for modification.** 
+Lets break down this statement to understand in detail.
 
-Suppose we create a class for bank accounts where we have two methods to withdraw and deposit the amount. Now in future we will have different kinds of accounts, to to deposit or withdraw the amount sometimes we are charged with some fees,depending on type of account.
-So if such a scenario occurs, then in that case we should not modify the existing class(close for modification) but rather create abstraction of such methods and then extend it into new class
+The statement says that whenever there is a new requirement for a class, we should not be modifying the class rather extending an abstraction of the class and utilizing it.
 
 Lets take an example to better understand :-
+
+Suppose we create a class for bank accounts where we have two methods to withdraw and deposit the amount.
 
 ```ts
 class BankAccount {
@@ -120,8 +122,7 @@ class BankAccount {
   }
 }
 ```
-
-From the code we can see that its a basic class of BankAccount that have a method to calculate withdraw and deposit. Now suppose a new requirement comes that we have different `accountType` and for different accountType calculations are different. Lets change the code accordingly.
+Now we have a new requirement for another kind of bank account, and for this account there is some additional fees for withdrawing and depositing amount.Lets change the code accordingly.
 
 ```ts
 class BankAccount {
@@ -166,7 +167,7 @@ currentAccount.withdrawAmount(1212);
 console.log("Amount in current account is ", currentAccount.amount);
 ```
 
-This code works, but can you find the issue with this approach ?
+This code works, but can you find the issue with this approach?
 
 #### Why Open Closed Principle
 
@@ -174,11 +175,13 @@ The above approach has few issues with it.
 
 1. We will end up testing the whole functionality again since we introduced new code in already existing feature
 2. This in turn can end up being a costly process for the organization
-3. Since our class or method might end up doing multiple this, this also breaks our Single Responsibility Principle
+3. Since our class or method might end up doing multiple things, this also breaks our Single Responsibility Principle
 4. With addition of new code, the maintainence overhead for the classes increases.
 
-To get rid of the above issues we go with Open Closed Principle approach
-What we do is basically create an abstract class for `bankAccount` and then make the `withdraw()` and `deposit()` method as abstract. Now once that is done, we can create as many classes as we want based on `type of account` and then simply extend this abstract class
+To get rid of the above issues we use the **Open Closed Principle**
+1. We create an abstract class for `bankAccount` and then make the `withdraw()` and `deposit()` method as abstract.
+2. We then consume this abstract class for our respective bank accounts.
+3. Accordingly we also change the calculation for `deposit` and `withdraw` directly for the account type classes
 
 ```ts
 abstract class BankAccount {
@@ -247,6 +250,8 @@ currentAccount.withdrawAmount(1212);
 
 console.log("Amount in current account is ", currentAccount.getAmount);
 ```
+
+From the refactored code we can see that we created new classes based on the `accountType` and we ended up updating the `withdraw()` and `deposit()` functions accordingly. Now if in future we get a new requirement for third type of account we can simply extend the `BankAccount` abstract class
 
 ### Liskov Substitution Principle(L)
 The Liskov Substitution Principle says that objects of a superclass shall be replaceable with objects of its subclasses without breaking the application. That requires the objects of your subclasses to behave in the same way as the objects of your superclass.
